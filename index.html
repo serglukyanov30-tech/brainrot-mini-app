@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brainrot Cases</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#100d20;color:white;font-family:Arial,sans-serif;padding:20px}
+.game{max-width:850px;margin:auto}
+header{text-align:center;padding:20px}
+.brand{font-size:32px;font-weight:bold;color:#c9a4ff}
+.brand span{color:#ffcf70}
+.subtitle{color:#b9b0cc}
+.stats,.menu{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:20px 0}
+.stats div,.panel{background:#211a37;padding:15px;border-radius:12px}
+.menu button,button{background:#8052cf;color:white;border:0;padding:12px 16px;border-radius:10px;cursor:pointer;font-weight:bold}
+.menu button:hover,button:hover{background:#a16bed}
+#content{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.case{background:#211a37;border:1px solid #49366c;padding:18px;border-radius:14px;text-align:center}
+.case h3{color:#e0c7ff}
+.case button{margin-top:10px}
+#message{text-align:center;color:#ffd77d;min-height:30px;margin:15px}
+.item{background:#30234b;padding:12px;border-radius:10px}
+.admin{margin-top:30px;background:#211a37;padding:15px;border-radius:12px}
+input{padding:11px;border-radius:8px;border:0;max-width:100%}
+</style>
+</head>
+<body>
+<div class="game">
+<header>
+<div class="brand">🧠 BRAINROT <span>CASES</span></div>
+<p class="subtitle">Открывай кейсы. Собирай брейнротов. Испытай удачу!</p>
+</header>
+
+<div class="stats">
+<div>💰 Монеты: <strong id="coins">1000</strong></div>
+<div>🍀 Уровень удачи: <strong id="luck">1</strong></div>
+<div>🎒 Дропы: <strong id="count">0</strong></div>
+</div>
+
+<nav class="menu">
+<button onclick="showCases()">📦 Кейсы</button>
+<button onclick="showInventory()">🎒 Инвентарь</button>
+<button onclick="showWheel()">🎡 Колесо</button>
+<button onclick="upgradeLuck()">🍀 Улучшить удачу</button>
+<button onclick="showPromo()">🎟️ Промокод</button>
+</nav>
+
+<main id="content"></main>
+<div id="message"></div>
+
+<details class="admin">
+<summary>🔐 Админ-панель</summary>
+<p>Введи админ-код:</p>
+<input id="adminKey" type="password" placeholder="Админ-код">
+<button onclick="adminLogin()">Войти</button>
+<div id="adminContent"></div>
+</details>
+</div>
+
+<script>
+const defaults={coins:1000,luck:1,inventory:[],usedPromos:[]};
+let data;
+try{data={...defaults,...JSON.parse(localStorage.getItem("brainrotSave")||"{}")}}catch(e){data={...defaults}}
+function save(){localStorage.setItem("brainrotSave",JSON.stringify(data));update()}
+function update(){
+document.getElementById("coins").textContent=data.coins;
+document.getElementById("luck").textContent=data.luck;
+document.getElementById("count").textContent=data.inventory.length;
+}
+function msg(t){document.getElementById("message").textContent=t}
+const cases=[
+{name:"📦 Обычный кейс",price:100,reward:"Тралалело"},
+{name:"💎 Редкий кейс",price:250,reward:"Бомбардиро Крокодило"},
+{name:"👑 Эпический кейс",price:500,reward:"Капучино Ассасино"}
+];
+function showCases(){
+document.getElementById("content").innerHTML=cases.map((c,i)=>`
+<div class="case"><h3>${c.name}</h3><p>Цена: ${c.price} монет</p>
+<p>Награда: ${c.reward}</p><button onclick="openCase(${i})">Получить награду</button></div>`).join("");
+}
+function openCase(i){
+let c=cases[i];
+if(data.coins<c.price){msg("Не хватает монет!");return}
+data.coins-=c.price;
+data.inventory.push(c.reward);
+save();msg("🎉 Получено: "+c.reward);
+}
+function showInventory(){
+let html=data.inventory.map(x=>`<div class="item">🧠 ${x}</div>`).join("");
+document.getElementById("content").innerHTML="<h2>🎒 Инвентарь</h2>"+(html||"<p>Пока пусто. Загляни в кейсы!</p>");
+}
+function showWheel(){
+document.getElementById("content").innerHTML=`
+<div class="case"><h2>🎡 Колесо наград</h2>
+<p>Бесплатная гарантированная награда</p>
+<button onclick="spin()">Крутить бесплатно</button></div>`;
+}
+function spin(){
+data.coins+=100;
+save();msg("🎉 Ты получил 100 монет!");
+}
+function upgradeLuck(){
+let price=data.luck*200;
+if(data.coins<price){msg("Не хватает монет!");return}
+data.coins-=price;data.luck++;save();msg("🍀 Удача улучшена!");
+}
+function showPromo(){
+document.getElementById("content").innerHTML=`
+<div class="case"><h2>🎟️ Промокод</h2>
+<input id="promo" placeholder="Введи промокод">
+<button onclick="usePromo()">Активировать</button></div>`;
+}
+function usePromo(){
+let p=document.getElementById("promo").value.trim().toUpperCase();
+if(p==="BRAINROT100"&&!data.usedPromos.includes(p)){
+data.coins+=100;data.usedPromos.push(p);save();msg("Промокод активирован! +100 монет");
+}else msg("Промокод неверный или уже использован");
+}
+function adminLogin(){
+if(document.getElementById("adminKey").value==="BRAINROT-ADMIN"){
+document.getElementById("adminContent").innerHTML="<p>Админ-режим включён на этом устройстве.</p><button onclick='giveCoins()'>Добавить 500 монет</button>";
+}else msg("Неверный админ-код");
+}
+function giveCoins(){data.coins+=500;save();msg("Добавлено 500 монет")}
+showCases();update();
+</script>
+</body>
+</html>
