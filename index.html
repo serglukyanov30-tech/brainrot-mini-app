@@ -85,7 +85,7 @@ document.getElementById("content").innerHTML=cases.map((c,i)=>`
 <div class="case"><h3>${c.name}</h3><p>Цена: ${c.price} монет</p>
 <p>Награда: ${c.reward}</p><button onclick="openCase(${i})">Получить награду</button></div>`).join("");
 }
-function openCase(i){let caseSpinning=false;
+let caseSpinning=false;
 
 function openCase(i){
 if(caseSpinning)return;
