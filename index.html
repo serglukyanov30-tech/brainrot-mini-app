@@ -128,11 +128,53 @@ msg("🎉 Выпало: "+winner);
 showCases();
 },4300);
 }
+function openCase(i){
+if(caseSpinning)return;
+
 let c=cases[i];
-if(data.coins<c.price){msg("Не хватает монет!");return}
+
+if(data.coins<c.price){
+msg("Не хватает монет!");
+return;
+}
+
+caseSpinning=true;
 data.coins-=c.price;
-data.inventory.push(c.reward);
-save();msg("🎉 Получено: "+c.reward);
+save();
+
+const winner=brainrots[Math.floor(Math.random()*brainrots.length)];
+
+const items=Array.from(
+{length:25},
+()=>brainrots[Math.floor(Math.random()*brainrots.length)]
+);
+
+items[22]=winner;
+
+document.getElementById("content").innerHTML=`
+<h2>🎰 Открываем BrainNoob!</h2>
+<div style="overflow:hidden;width:100%;background:#211a37;border-radius:12px;position:relative;padding:15px 0">
+<div style="position:absolute;left:50%;top:0;bottom:0;width:3px;background:#ffcf70;z-index:2"></div>
+<div id="spinTrack" style="display:flex;width:max-content;gap:5px;transform:translateX(0);transition:transform 4s cubic-bezier(.12,.75,.15,1)">
+${items.map(x=>`<div style="width:120px;min-width:120px;height:90px;background:#392b58;border-radius:10px;display:flex;align-items:center;justify-content:center;text-align:center;padding:5px">${x}</div>`).join("")}
+</div>
+</div>
+<p style="text-align:center">🍀 Удачи!</p>
+`;
+
+setTimeout(()=>{
+const box=document.getElementById("spinTrack").parentElement;
+document.getElementById("spinTrack").style.transform=`translateX(${box.clientWidth/2-2810}px)`;
+},100);
+
+setTimeout(()=>{
+data.inventory.push(winner);
+save();
+caseSpinning=false;
+msg("🎉 Выпало: "+winner);
+showCases();
+},4300);
+}
 }
 function showInventory(){
 let html=data.inventory.map(x=>`<div class="item">🧠 ${x}</div>`).join("");
