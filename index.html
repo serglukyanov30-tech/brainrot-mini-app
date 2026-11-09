@@ -70,10 +70,9 @@ document.getElementById("luck").textContent=data.luck;
 document.getElementById("count").textContent=data.inventory.length;
 }
 function msg(t){document.getElementById("message").textContent=t}
-const cases=[
-{name:"📦 Обычный кейс",price:100,reward:"Тралалело"},
-{name:"💎 Редкий кейс",price:250,reward:"Бомбардиро Крокодило"},
-{name:"👑 Эпический кейс",price:500,reward:"Капучино Ассасино"}
+
+  const cases=[
+{name:"🧠 BrainNoob",price:100,reward:"BrainNoob"}
 ];
 function showCases(){
 document.getElementById("content").innerHTML=cases.map((c,i)=>`
