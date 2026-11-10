@@ -95,7 +95,7 @@ if(data.coins<c.price){
 msg("Не хватает монет!");
 return;
 }
-
+u
 caseSpinning=true;
 data.coins-=c.price;
 save();
@@ -116,8 +116,9 @@ ${items.map(x=>`<div style="width:120px;min-width:120px;height:90px;background:#
 `;
 
 setTimeout(()=>{
-document.getElementById("spinTrack").style.transform="const box=document.getElementById("spinTrack").parentElement;
-document.getElementById("spinTrack").style.transform=`translateX(${box.clientWidth/2-2810}px)`
+const box=document.getElementById("spinTrack").parentElement;
+document.getElementById("spinTrack").style.transform=`translateX(${box.clientWidth/2-2810}px)`;
+},100);
 },100);
 
 setTimeout(()=>{
